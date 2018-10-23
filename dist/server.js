@@ -86,6 +86,42 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/ipAddress.js":
+/*!**************************!*\
+  !*** ./src/ipAddress.js ***!
+  \**************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+exports.default = function () {
+    var os = __webpack_require__(/*! os */ "os");
+
+    var networkInterfaces = os.networkInterfaces();
+
+    return Object.keys(networkInterfaces).map(function (key) {
+        return networkInterfaces[key].filter(function (addr) {
+            return addr.family === 'IPv4';
+        }).reduce(function (arr, obj) {
+            arr.push(obj.address);
+            return arr;
+        }, []);
+    }).reduce(function (newArr, arr) {
+        arr.forEach(function (ip) {
+            return newArr.push(ip);
+        });
+        return newArr;
+    }, []);
+};
+
+/***/ }),
+
 /***/ "./src/lmApi.js":
 /*!**********************!*\
   !*** ./src/lmApi.js ***!
@@ -134,6 +170,22 @@ var _cors = __webpack_require__(/*! cors */ "cors");
 
 var _cors2 = _interopRequireDefault(_cors);
 
+var _http = __webpack_require__(/*! http */ "http");
+
+var _http2 = _interopRequireDefault(_http);
+
+var _compression = __webpack_require__(/*! compression */ "compression");
+
+var _compression2 = _interopRequireDefault(_compression);
+
+var _bodyParser = __webpack_require__(/*! body-parser */ "body-parser");
+
+var _bodyParser2 = _interopRequireDefault(_bodyParser);
+
+var _ipAddress = __webpack_require__(/*! ./ipAddress */ "./src/ipAddress.js");
+
+var _ipAddress2 = _interopRequireDefault(_ipAddress);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var server = exports.server = function server() {
@@ -141,23 +193,39 @@ var server = exports.server = function server() {
 
     var exp = (0, _express2.default)();
 
-    if (global.lmConfig.server.useCors) {
+    if (lmConfig.server.useCors) {
         exp.use((0, _cors2.default)());
     }
 
     // set up gzip compression
-    if (global.lmConfig.server.gzip) {
-        exp.use(compression({
+    if (lmConfig.server.gzip) {
+        exp.use((0, _compression2.default)({
             filter: function filter(req, res) {
-                return req.headers['x-no-compression'] ? false : compression.filter(req, res);
+                return req.headers['x-no-compression'] ? false : _compression2.default.filter(req, res);
             }
         }));
     }
 
-    exp.use(bodyParser.json());
-    exp.use(bodyParser.urlencoded({
+    exp.use(_bodyParser2.default.json());
+    exp.use(_bodyParser2.default.urlencoded({
         extended: true
     }));
+
+    exp.use("/", function (req, res) {
+        return res.status(422).json({
+            message: req.protocol + "://" + req.get('host') + req.originalUrl + " do not exist !"
+        });
+    });
+
+    var server = _http2.default.createServer(exp);
+
+    server.listen(lmConfig.server.port, function () {
+
+        console.log('\n\nServer listening on port ' + lmConfig.server.port + "\n\n");
+        (0, _ipAddress2.default)().forEach(function (ip) {
+            console.log("http://" + ip + ":" + lmConfig.server.port + "/api/" + lmConfig.server.module);
+        });
+    });
 };
 
 /***/ }),
@@ -288,6 +356,28 @@ module.exports = __webpack_require__(/*! ./srcExample/index.js */"./srcExample/i
 
 /***/ }),
 
+/***/ "body-parser":
+/*!******************************!*\
+  !*** external "body-parser" ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("body-parser");
+
+/***/ }),
+
+/***/ "compression":
+/*!******************************!*\
+  !*** external "compression" ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("compression");
+
+/***/ }),
+
 /***/ "cors":
 /*!***********************!*\
   !*** external "cors" ***!
@@ -307,6 +397,28 @@ module.exports = require("cors");
 /***/ (function(module, exports) {
 
 module.exports = require("express");
+
+/***/ }),
+
+/***/ "http":
+/*!***********************!*\
+  !*** external "http" ***!
+  \***********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("http");
+
+/***/ }),
+
+/***/ "os":
+/*!*********************!*\
+  !*** external "os" ***!
+  \*********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("os");
 
 /***/ })
 
