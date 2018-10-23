@@ -1,0 +1,18 @@
+{
+  "plugins": [
+    "transform-class-properties",
+    "transform-object-rest-spread",
+    ["transform-runtime", {
+      "polyfill": false,
+      "regenerator": true
+    }]
+  ],
+  "presets": [
+    [
+      "env",
+      {"modules": false}
+    ],
+    "es2015",
+    "stage-0"
+  ]
+}

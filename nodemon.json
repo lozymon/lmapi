@@ -1,0 +1,14 @@
+{
+    "verbose": false,
+    "ignore": [
+      ".git",
+      "node_modules/**/node_modules",
+      "dist/**"
+    ],
+    "execMap": {
+      "js": "node --harmony"
+    },
+    "exec": "webpack",
+    "presets": "env,es2015,stage-0"
+  }
+  

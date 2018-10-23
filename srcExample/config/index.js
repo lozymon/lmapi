@@ -1,7 +1,7 @@
 import server from './server';
 import database from './database';
 
-export default {
+global.lmConfig =  {
     server,
     database
 }
