@@ -4,6 +4,7 @@ import http from 'http';
 import compression from 'compression';
 import bodyParser from "body-parser";
 import ipAddress from './ipAddress';
+import createRoutes from "./createRoutes";
 
 export const server = (apiList = []) => {
     const exp = express();
@@ -23,6 +24,8 @@ export const server = (apiList = []) => {
     exp.use(bodyParser.urlencoded({
         extended: true
     }));
+
+    exp.use('/api', createRoutes(apiList))
 
     exp.use("/", (req, res) => res.status(422).json({
         message: req.protocol + "://" + req.get('host') + req.originalUrl + " do not exist !"
