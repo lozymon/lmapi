@@ -14,7 +14,14 @@ const createRoutes = (apiList) => {
     routeList.forEach(route => {
         console.log(`${route.type} -> `, route.name)
         router[route.type]('/' + route.name, (req, res) => {
-            route.callback(req, res)
+            const ret = route.callback(req, res)
+
+            // if callback has return value trye to find the type and return the value
+            if (typeof ret === 'string') {
+                res.send(ret);
+            } else if (typeof ret === 'object') {
+                res.send(JSON.stringify(ret));
+            }
         })
     })
 
