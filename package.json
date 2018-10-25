@@ -2,9 +2,10 @@
   "name": "lmapi",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./lib/lmApi.js",
   "scripts": {
     "start": "./node_modules/.bin/nodemon",
+    "build": "babel ./src lib -d lib",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
